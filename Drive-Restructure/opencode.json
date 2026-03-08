@@ -1,0 +1,135 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "main-lmstudio/coder",
+  "small_model": "main-lmstudio/planner",
+  "default_agent": "restructure-planner",
+  "compaction": {
+    "auto": true,
+    "prune": true
+  },
+  "permission": {
+    "edit": "ask",
+    "bash": "ask",
+    "webfetch": "deny"
+  },
+  "tools": {
+    "bash": true,
+    "read": true,
+    "write": true,
+    "edit": true,
+    "glob": true,
+    "grep": true,
+    "tools": true,
+    "todowrite": true,
+    "todoread": true,
+    "webfetch": false
+  },
+  "agent": {
+    "build": {
+      "disable": true
+    },
+    "plan": {
+      "disable": true
+    },
+    "restructure-planner": {
+      "description": "Inspects directories and writes a restructure plan. Never moves files.",
+      "model": "main-lmstudio/planner",
+      "mode": "primary",
+      "prompt": "You are a file organization planner. You ONLY inspect and plan. You NEVER move, delete, or rename files.\n\nThis is Windows with Git Bash. Use Windows drive paths like J:/ not Linux paths like /mnt/j/.\n\nRules:\n1. To list files, call bash with exactly this command: ls -1 J:/\n2. Do NOT use /mnt/ paths. Use J:/ C:/ D:/ etc.\n3. After inspecting, use the write tool to save a plan to .opencode/plans/restructure-plan.md\n4. The plan MUST contain a markdown table with columns: Step, Action, Source, Destination\n5. All paths must use Windows drive letters with forward slashes: J:/FolderName\n6. Action must be mkdir or move\n7. Every move needs one specific source and one specific destination. No wildcards.\n8. Do NOT put destinations inside source paths.\n9. After writing the plan file, stop.",
+      "tools": {
+        "bash": true,
+        "read": true,
+        "write": true,
+        "glob": true,
+        "tools": true
+      }
+    },
+    "restructure-validator": {
+      "description": "Reads the plan and spot-checks paths. Never moves files.",
+      "model": "main-lmstudio/planner",
+      "mode": "primary",
+      "prompt": "You validate a restructure plan. You NEVER move, delete, or rename files.\n\nThis is Windows with Git Bash. Use Windows drive paths like J:/ not Linux paths like /mnt/j/.\n\nRules:\n1. Use the read tool to load .opencode/plans/restructure-plan.md\n2. Pick 3-5 source paths from the plan table.\n3. To check if a path exists, call bash with: ls -d \"J:/FolderName\"\n4. Do NOT use /mnt/ paths. Use J:/ C:/ D:/ etc.\n5. Print PASS if the source exists, FAIL if it does not.\n6. After checking, stop.",
+      "tools": {
+        "bash": true,
+        "read": true,
+        "glob": true,
+        "tools": true
+      }
+    },
+    "restructure-executor": {
+      "description": "Executes the restructure plan by calling bash tool for each step.",
+      "model": "main-lmstudio/coder",
+      "mode": "primary",
+      "prompt": "You execute a file restructure plan. You MUST call the bash tool for every action. NEVER just print commands as text.\n\nThis is Windows with Git Bash. Use mv not move. Use mkdir -p not mkdir. Use Windows drive paths like J:/ not Linux paths like /mnt/j/. Do NOT use /mnt/ paths.\n\nRules:\n1. Use the read tool to load .opencode/plans/restructure-plan.md\n2. Find the markdown table with columns: Step, Action, Source, Destination\n3. Go through the table row by row, in order.\n4. For mkdir rows: call bash with: mkdir -p \"DESTINATION\"\n5. For move rows: call bash with: mv \"SOURCE\" \"DESTINATION\"\n6. One bash call per row. Wait for approval each time.\n7. After all rows done, call bash with: ls \"DESTINATION\" for each to verify.\n8. Print summary: which rows succeeded, which failed.\n\nDo NOT skip the bash tool call. If you write a command as text instead of calling bash, you have failed.",
+      "tools": {
+        "bash": true,
+        "read": true,
+        "glob": true,
+        "tools": true
+      }
+    }
+  },
+  "provider": {
+    "main-lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Main Desktop LM Studio",
+      "options": {
+        "baseURL": "http://127.0.0.1:3334/v1",
+        "apiKey": "lmstudio",
+        "timeout": 120000
+      },
+      "models": {
+        "planner": {
+          "id": "archive/gguf@q4_k_m",
+          "name": "Qwen2.5-Coder-32B",
+          "limit": {
+            "context": 16384,
+            "output": 4096
+          }
+        },
+        "coder": {
+          "id": "archive/gguf@q4_k_m",
+          "name": "Qwen2.5-Coder-32B",
+          "limit": {
+            "context": 16384,
+            "output": 4096
+          }
+        }
+      }
+    }
+  },
+  "mcp": {
+    "windows-mcp": {
+      "enabled": false
+    },
+    "obsidian": {
+      "enabled": false
+    },
+    "docker-mcp": {
+      "enabled": false
+    },
+    "MCP_DOCKER": {
+      "enabled": false
+    },
+    "brave-search": {
+      "enabled": false
+    },
+    "coexistai": {
+      "enabled": false
+    },
+    "github": {
+      "enabled": false
+    }
+  },
+  "watcher": {
+    "ignore": [
+      "node_modules",
+      "Cache",
+      "Temp",
+      ".git",
+      ".opencode",
+      "staging",
+      "logs"
+    ]
+  }
+}
