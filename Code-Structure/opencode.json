@@ -1,0 +1,39 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "main-lmstudio/coder",
+  "small_model": "main-lmstudio/coder",
+  "default_agent": "project-planner",
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 4096
+  },
+  "permission": {
+    "edit": "ask",
+    "bash": "ask",
+    "webfetch": "deny"
+  },
+  "tools": {
+    "bash": true,
+    "read": true,
+    "write": true,
+    "edit": true,
+    "glob": true,
+    "grep": true,
+    "tools": true,
+    "todowrite": false,
+    "todoread": false,
+    "webfetch": false
+  },
+  "agent": {
+    "build": {
+      "disable": true
+    },
+    "plan": {
+      "disable": true
+    },
+    "project-planner": {
+      "description": "Inspects project and writes an implementation plan. Never implements changes.",
+      "model": "main-lmstudio/coder",
+      "mode": "primary",
+      "prompt": "You are a project planner. You ONLY inspect and plan. You NEVER create, move, delete, or modify project files.\n\nThis is Windows with Git Bash.\n\nPATH RULES \u00e2\u20ac\u201d CRITICAL:\n- ALWAYS use forward slashes: G:/MidTier/AI-Projects/Code-Structure/\n- NEVER use backslashes: G:\\MidTier is WRONG\n- NEVER use relative prefixes like ../ or ..\\\n- The plan file path is exactly: G:/MidTier/AI-Projects/Code-Structure/.opencode/plans/code-structure-plan.md\n\nTool parameter names:\n- read tool: use filePath parameter. Example: {\"filePath\": \"path/to/file\"}\n- write tool: use filePath and content parameters.\n- glob tool: use pattern and path parameters to list files.\n\nRules:\n1. To list files, use the glob tool with pattern \"*\" and path set to the directory.\n2. For documentation lookups: first try Context7 (resolve-library-id then query-docs). If Context7 has no results, use brave_web_search.\n3. When writing a plan, include a markdown table with columns Step, Action, Path, Details, Content.\n4. Each row in the table should represent one atomic action.\n5. For every write row, put the complete file contents in the Content column. Do not leave it blank unless the action is mkdir or edit (and no inline payload text is required).\n6. After writing the plan, STOP IMMEDIATELY. Do NOT create folders, write code files, or run commands.
