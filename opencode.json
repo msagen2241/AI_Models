@@ -1,1 +1,167 @@
-{\"models\": {\"default\": \"gpt-4o-mini\", \"options\": [\"gpt-4-turbo-preview\", \"claude-3-opus-20240229\"]}, \"tools\": {\"enabled\": [\"bash\", \"read\", \"glob\", \"grep\", \"edit\", \"write\", \"task\", \"github_add_comment_to_pending_review\", \"github_add_issue_comment\", \"github_add_reply_to_pull_request_comment\", \"github_assign_copilot_to_issue\", \"github_create_branch\", \"github_create_or_update_file\", \"github_create_pull_request\", \"github_create_repository\", \"github_delete_file\", \"github_fork_repository\", \"github_get_commit\", \"github_get_file_contents\", \"github_get_label\", \"github_get_latest_release\", \"github_get_release_by_tag\", \"github_get_tag\", \"github_get_team_members\", \"github_get_teams\", \"github_issue_read\", \"github_issue_write\", \"github_list_branches\", \"github_list_commits\", \"github_list_issue_types\", \"github_list_issues\", \"github_list_pull_requests\", \"github_list_releases\", \"github_list_tags\", \"github_merge_pull_request\", \"github_pull_request_read\", \"github_pull_request_review_write\", \"github_push_files\", \"github_request_copilot_review\", \"github_search_code\", \"github_search_issues\", \"github_search_pull_requests\", \"github_search_repositories\", \"github_search_users\", \"github_sub_issue_write\", \"github_update_pull_request\", \"github_update_pull_request_branch\"]}, \"mcp\": {\"servers\": {\"MCP_DOCKER\": {\"url\": \"http://localhost:8080/mcp\", \"transport\": \"http\"}}}, \"agents\": {\"default\": {\"prompt\": \"You are an experienced coding assistant with expertise in software development, system design, and AI tool integration. Focus on delivering high-quality, production-ready code that follows industry best practices.\", \"temperature\": 0.1}}, \"slashCommands\": {\"\\/plan-structure\": {\"description\": \"Create a structured implementation plan\", \"template\": \"# Implementation Plan for {{project_name}}\n## Overview\n{{overview}}\n## Technical Requirements\n- [ ] Language: {{language}}\\n- [ ] Framework: {{framework}}\\n- [ ] Database: {{database}}\\n- [ ] Cloud Provider: {{cloud_provider}}\\n## Architecture\n```mermaid\\ngraph TD;\\n    A[User Interface] --> B[API Gateway];\\nB --> C[Business Logic Layer];\\nC --> D[Data Access Layer];\\nD --> E[Database];\\n```\n## Implementation Steps\n1. **Setup**: Initialize project structure and dependencies\\n2. **Core Features**: Implement {{core_feature_1}}, {{core_feature_2}}\\n3. **Integration**: Connect to {{external_service_1}}, {{external_service_2}}\\n4. **Testing**: Write unit tests and integration tests\\n5. **Deployment**: Deploy to {{cloud_provider}} with CI/CD pipeline\"}, \"\\/implement-structure\": {\"description\": \"Implement a structured solution\", \"template\": \"# Implementation Steps for {{feature_name}}\n## Prerequisites\n- [ ] Environment: {{environment}}\\n- [ ] Dependencies: {{dependency_1}}, {{dependency_2}}\\n- [ ] Access: {{required_access}}\\n## Step-by-Step Implementation\\n### 1. Setup Project Structure\\n```bash\\n{{setup_command}}\\n```\\n### 2. Core Implementation\\n```{{language}}\\n{{core_code_snippet}}\\n```\\n### 3. Integration\\n```{{integration_language}}\\n{{integration_code}}\\\\n```\\n### 4. Testing\\n```bash\\n{{test_command}}\\n```\\n## Validation Criteria\\n- [ ] Passes all unit tests\\\\n- [ ] Meets performance requirements ({{latency_threshold}}ms)\\\\n- [ ] Follows security guidelines ({{compliance_standard}})\", \"disabled\": false}, \"\\/review-structure\": {\"description\": \"Review implementation structure\", \"template\": \"# Code Review for {{feature_name}}\n## Overview\nReviewed by: {{reviewer_name}}\\nDate: {{review_date}}\\n## Findings\\n### Positive Aspects\\n- [x] Follows project coding standards\\\\n- [x] Proper error handling implemented\\\\n- [x] Clear documentation provided\\n### Areas for Improvement\\n1. **Performance**: Optimize {{function_name}} for better latency\\n2. **Security**: Add input validation for {{parameter_name}}\\n3. **Maintainability**: Refactor {{module_name}} for better readability\\n## Action Items\\n- [ ] Address performance optimization by EOD {{deadline_date}}\\\\n- [ ] Implement security fixes before production deployment\\\\n- [ ] Update documentation to reflect code changes\", \"disabled\": false}, \"\\/validate-structure\": {\"description\": \"Validate implementation structure\", \"template\": \"# Validation Report for {{feature_name}}\n## Test Results\n| Test Case | Status | Details |\\n|-----------|--------|---------|\\n| Basic Functionality | {{pass_fail}} | {{result_details}} |\\n| Performance | {{pass_fail}} | Average latency: {{latency_ms}}ms (threshold: {{threshold_ms}}ms) |\\n| Security | {{pass_fail}} | Vulnerabilities found: {{vulnerability_count}} |\\n| Compatibility | {{pass_fail}} | Works with {{compatible_versions}} |\\n## Validation Criteria Met\\n- [x] All functional requirements satisfied\\\\n- [x] Performance meets SLAs\\\\n- [x] Security standards complied with\\\\n- [x] Backward compatibility maintained\\n## Sign-off\\nValidated by: {{validator_name}}\\nDate: {{validation_date}}\", \"disabled\": false}}, \"workspace\": {\"rootDirectory\": \".\", \"ignorePatterns\": [\".git\", \"node_modules\", \"dist\", \"build\", \"__pycache__\", \".env\", \"logs\", \"scratch\"]}, \"experimentalFeatures\": {\"enabled\": true, \"plugins\": [\"@opencode-ai/plugin\"]}}
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "main-lmstudio/coder",
+  "small_model": "main-lmstudio/coder",
+  "default_agent": "project-planner",
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 4096
+  },
+  "permission": {
+    "edit": "ask",
+    "bash": "ask",
+    "webfetch": "deny"
+  },
+  "tools": {
+    "bash": true,
+    "read": true,
+    "write": true,
+    "edit": true,
+    "glob": true,
+    "grep": true,
+    "tools": true,
+    "todowrite": false,
+    "todoread": false,
+    "webfetch": false
+  },
+  "agent": {
+    "build": {
+      "disable": true
+    },
+    "plan": {
+      "disable": true
+    },
+    "project-planner": {
+      "description": "Inspects project and writes an implementation plan. Never implements changes.",
+      "model": "main-lmstudio/coder",
+      "mode": "primary",
+      "prompt": "You are a project planner. You ONLY inspect and plan. You NEVER create, move, delete, or modify project files.\n\nThis is Windows with Git Bash.\n\nPATH RULES \u00e2\u20ac\u201d CRITICAL:\n- ALWAYS use forward slashes: G:/MidTier/AI-Projects/Code-Structure/\n- NEVER use backslashes: G:\\MidTier is WRONG\n- NEVER use relative prefixes like ../ or ..\\\n- The plan file path is exactly: G:/MidTier/AI-Projects/Code-Structure/.opencode/plans/code-structure-plan.md\n\nTool parameter names:\n- read tool: use filePath parameter. Example: {\"filePath\": \"path/to/file\"}\n- write tool: use filePath and content parameters.\n- glob tool: use pattern and path parameters to list files.\n\nRules:\n1. To list files, use the glob tool with pattern \"*\" and path set to the directory.\n2. For documentation lookups: first try Context7 (resolve-library-id then query-docs). If Context7 has no results, use brave_web_search to find complete docs.\n3. If the user does not provide a target path, use G:/MidTier/AI-Projects/ as the root and append the project name. Example: if user says MudCommands, use G:/MidTier/AI-Projects/MudCommands.\n5. Write exactly one plan to G:/MidTier/AI-Projects/Code-Structure/.opencode/plans/code-structure-plan.md\n6. The plan MUST contain a markdown table with columns: Step, Action, Path, Details, Content\n7. Allowed actions: mkdir, write, edit, bash\n8. All paths in the table must be absolute with forward slashes.\n9. Keep each row atomic. One action per row.\n10. For every write row, put the complete file contents in the Content column. Do not leave Content blank for write rows.\n11. Leave Content blank for mkdir, edit, and bash rows unless the Details field explicitly requires inline payload text.\n12. After writing the plan file, STOP IMMEDIATELY. Do NOT create folders, write code files, or run commands. The executor does that.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "glob": true,
+        "grep": true,
+        "tools": true,
+        "bash": true
+      }
+    },
+    "project-validator": {
+      "description": "Reads the plan and spot-checks paths. Never implements changes.",
+      "model": "main-lmstudio/coder",
+      "mode": "primary",
+      "prompt": "You validate an implementation plan. You NEVER create, move, delete, or modify project files.\n\nThis is Windows with Git Bash.\n\nPATH RULES \u00e2\u20ac\u201d CRITICAL:\n- ALWAYS use forward slashes: G:/MidTier/AI-Projects/\n- NEVER use backslashes. NEVER use ../ or ..\\ prefixes.\n\nTool parameter names:\n- bash tool: use command parameter. Example: {\"command\": \"ls -d G:/path\"}\n- read tool: use filePath parameter. Example: {\"filePath\": \"path/to/file\"}\n\nRules:\n1. Use the read tool with filePath to load G:/MidTier/AI-Projects/Code-Structure/.opencode/plans/code-structure-plan.md\n2. Verify the plan has a table with columns: Step, Action, Path, Details, Content\n3. Verify every write row has a non-empty Content cell.\n4. Pick 3-5 rows from the table.\n5. For each picked row, call bash with command: ls -d \"PATH\" to check if the path exists or not.\n6. Print PASS if expectations match, FAIL if they do not.\n7. After checking, stop.",
+      "tools": {
+        "bash": true,
+        "read": true,
+        "glob": true,
+        "grep": true,
+        "tools": true
+      }
+    },
+    "project-executor": {
+      "description": "Executes the validated plan by calling tools for each step.",
+      "model": "main-lmstudio/coder",
+      "mode": "primary",
+      "prompt": "You build projects. You MUST call tools for every action. NEVER just print commands or code as text.\n\nThis is Windows with Git Bash. Use mkdir -p not mkdir.\n\nPATH RULES \u2014 CRITICAL:\n- ALWAYS use forward slashes: G:/MidTier/AI-Projects/\n- NEVER use backslashes. NEVER use ../ or ..\\ prefixes.\n- Default project root: G:/MidTier/AI-Projects/ \u2014 append the project name. Example: G:/MidTier/AI-Projects/MudCommands\n\nTool parameter names:\n- bash tool: use command parameter. Example: {\"command\": \"mkdir -p G:/path\"}\n- read tool: use filePath parameter. Example: {\"filePath\": \"path/to/file\"}\n- write tool: use filePath and content parameters.\n- edit tool: use filePath, old, and new parameters.\n\nRules:\n1. If a plan file exists at G:/MidTier/AI-Projects/Code-Structure/.opencode/plans/code-structure-plan.md, read it and follow the table row by row.\n2. If no plan file exists, work directly from the user request.\n3. For documentation lookups: first try Context7 (resolve-library-id then query-docs). If Context7 has no results, use brave_web_search.\n4. The execution table schema is: Step, Action, Path, Details, Content.\n5. Create project directories first with bash command: mkdir -p \"PATH\"\n6. Create files with the write tool using filePath from Path and content from Content.\n7. Never call the write tool unless both filePath and content are present as non-empty strings. If a write row has empty Content, stop and report a malformed plan.\n8. One tool call per step. Wait for result each time.\n9. After done, verify key paths with bash command: ls -d \"PATH\"\n10. Print summary of what was created.",
+      "tools": {
+        "bash": true,
+        "read": true,
+        "write": true,
+        "edit": true,
+        "glob": true,
+        "grep": true,
+        "tools": true
+      }
+    },
+    "project-reviewer": {
+      "description": "Audits implemented changes for issues.",
+      "model": "main-lmstudio/coder",
+      "mode": "primary",
+      "prompt": "You review implemented changes. You NEVER create, move, delete, or modify project files.\n\nRules:\n1. Use read tool with filePath to inspect changed files.\n2. Use bash with ls to check directory structure.\n3. Check for broken imports, missing files, path issues, dead files.\n4. Summarize what changed and what looks risky or incomplete.\n5. After reporting, stop.",
+      "tools": {
+        "bash": true,
+        "read": true,
+        "glob": true,
+        "grep": true,
+        "tools": true
+      }
+    }
+  },
+  "provider": {
+    "main-lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Main Desktop LM Studio",
+      "options": {
+        "baseURL": "http://127.0.0.1:3334/v1",
+        "apiKey": "lmstudio",
+        "timeout": 600000
+      },
+      "models": {
+        "coder": {
+          "id": "coding/gguf@q4_k_m",
+          "name": "seed-oss-36",
+          "tool_call": true,
+          "limit": {
+            "context": 65536,
+            "output": 60000
+          }
+        }
+      }
+    }
+  },
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "enabled": true
+    },
+    "windows-mcp": {
+      "enabled": false
+    },
+    "obsidian": {
+      "enabled": false
+    },
+    "docker-mcp": {
+      "enabled": false
+    },
+    "MCP_DOCKER": {
+      "enabled": false
+    },
+    "brave-search": {
+      "enabled": true
+    },
+    "coexistai": {
+      "enabled": false
+    },
+    "github": {
+      "enabled": false
+    },
+    "playwright": {
+      "enabled": false
+    },
+    "docs-lookup": {
+      "enabled": false
+    },
+    "database": {
+      "enabled": false
+    },
+    "cloud": {
+      "enabled": false
+    }
+  },
+  "watcher": {
+    "ignore": [
+      "node_modules",
+      ".git",
+      "dist",
+      "build",
+      "coverage",
+      ".next",
+      ".turbo",
+      ".cache",
+      "logs",
+      "scratch"
+    ]
+  }
+}
